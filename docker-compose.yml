@@ -1,0 +1,33 @@
+# Local MongoDB and Redis for the JobsterU API.
+# These services have no password. Do not use this file as a production deployment.
+services:
+  mongodb:
+    image: mongo:7
+    container_name: jobsteru-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - jobsteru_mongodb:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: jobsteru-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - jobsteru_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  jobsteru_mongodb:
+  jobsteru_redis:
